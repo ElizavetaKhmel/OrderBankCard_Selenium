@@ -6,15 +6,22 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.junit.jupiter.api.AfterEach;
+import org.openqa.selenium.chrome.ChromeOptions;
+
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class OrderBankCard {
     private WebDriver driver;
+    ChromeOptions options = new ChromeOptions();
 
     @BeforeEach
-    void setUp() { driver = new ChromeDriver(); }
+    void setUp() {
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--headless");
+        driver = new ChromeDriver(options); }
 
 
     @BeforeAll
@@ -32,15 +39,15 @@ public class OrderBankCard {
 
     @Test
     void shouldTestSomething () throws InterruptedException {
-        driver.get("http://0.0.0.0:9999/");
+        driver.get("http://localhost:9999/");
 
         List<WebElement> elements = driver.findElements(By.className("input__control"));
-        elements.get(0).sendKeys("Степанова Анна");
-        elements.get(1).sendKeys("+79992224088");
+        driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Степанова Анна-Мария");
+        driver.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("+79992224088");
         driver.findElement(By.className("checkbox__box")).click();
         driver.findElement(By.className("button__content")).click();
 
-        String text = driver.findElement(By.className("paragraph_theme_alfa-on-white")).getText();
+        String text = driver.findElement(By.cssSelector("[data-test-id='order-success']")).getText();
         assertEquals ("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время." , text.trim());
     }
 }
